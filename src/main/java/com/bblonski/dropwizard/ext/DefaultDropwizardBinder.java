@@ -5,7 +5,9 @@ import com.codahale.metrics.health.HealthCheckRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.Application;
 import io.dropwizard.Configuration;
+import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.lifecycle.setup.LifecycleEnvironment;
+import io.dropwizard.setup.AdminEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -33,6 +35,8 @@ public class DefaultDropwizardBinder<T extends Configuration> extends AbstractBi
         bind(environment.getValidator()).to(Validator.class);
         bind(configuration).to(bootstrap.getApplication().getConfigurationClass()).to(Configuration.class);
         bind(environment.getObjectMapper()).to(ObjectMapper.class);
+        bind(environment.jersey()).to(JerseyEnvironment.class);
+        bind(environment.admin()).to(AdminEnvironment.class);
         bind(bootstrap.getApplication()).to((Class) bootstrap.getApplication().getClass()).to(Application.class);
     }
 }

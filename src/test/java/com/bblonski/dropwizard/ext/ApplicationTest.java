@@ -16,7 +16,7 @@ class ApplicationTest extends Application<Configuration> {
     @Override
     public void initialize(Bootstrap<Configuration> bootstrap) {
         super.initialize(bootstrap);
-        bootstrap.addBundle(new HK2BridgeBundle<>(AppBinder.class));
+        bootstrap.addBundle(new DropwizardDIBundle<>(AppBinder.class));
     }
 
     @Override

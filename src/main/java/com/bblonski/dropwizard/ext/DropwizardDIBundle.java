@@ -18,15 +18,17 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import javax.inject.Singleton;
 import java.util.Objects;
 
-public class HK2BridgeBundle<T extends Configuration> implements ConfiguredBundle<T> {
-    private final Class<? extends ApplicationBinder> binder;
+public class DropwizardDIBundle<T extends Configuration> implements ConfiguredBundle<T> {
+    private final Class<? extends DropwizardBinder> binder;
     private Bootstrap<?> bootstrap;
+    private DropwizardBinder<T> binderInstance;
 
-    public HK2BridgeBundle(Class<? extends ApplicationBinder<T>> binder) {
+    public DropwizardDIBundle(Class<? extends DropwizardBinder<T>> binder) {
         this.binder = binder;
     }
 
-    public HK2BridgeBundle(ApplicationBinder<T> binder) {
+    public DropwizardDIBundle(DropwizardBinder<T> binder) {
+        this.binderInstance = binder;
         this.binder = binder.getClass();
     }
 
@@ -56,8 +58,13 @@ public class HK2BridgeBundle<T extends Configuration> implements ConfiguredBundl
                             .getServiceLocator();
                     ServiceLocatorUtilities.enableImmediateScope(serviceLocator);
                     final EventBus eventBus = serviceLocator.getService(EventBus.class);
-                    final DropwizardInterceptionService interceptionService = (DropwizardInterceptionService)serviceLocator.getService(InterceptionService.class);
-                    serviceLocator.getService(binder).postRun(environment, configuration, eventBus, interceptionService);
+                    final DropwizardInterceptionService interceptionService = (DropwizardInterceptionService) serviceLocator.getService(InterceptionService.class);
+                    if (binderInstance != null) {
+                        serviceLocator.inject(binderInstance);
+                    } else {
+                        binderInstance = serviceLocator.getService(binder);
+                    }
+                    binderInstance.postRun(environment, configuration, eventBus, interceptionService);
                 }
             }
 
