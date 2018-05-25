@@ -1,12 +1,12 @@
-package com.bblonski.dropwizard.ext;
+package com.bblonski.test;
 
+import com.bblonski.dropwizard.ext.DropwizardDIBundle;
 import io.dropwizard.Application;
 import io.dropwizard.Configuration;
+import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
-
-import javax.inject.Singleton;
 
 class ApplicationTest extends Application<Configuration> {
     public static void main(String[] args) throws Exception {
@@ -16,7 +16,9 @@ class ApplicationTest extends Application<Configuration> {
     @Override
     public void initialize(Bootstrap<Configuration> bootstrap) {
         super.initialize(bootstrap);
-        bootstrap.addBundle(new DropwizardDIBundle<>(AppBinder.class));
+        final DropwizardDIBundle<Configuration> bundle = new DropwizardDIBundle<>(AppInitializer.class);
+        bundle.setInterceptionService(MyInterceptionService.class);
+        bootstrap.addBundle(bundle);
     }
 
     @Override
@@ -25,9 +27,19 @@ class ApplicationTest extends Application<Configuration> {
         environment.jersey().register(new AbstractBinder() {
             @Override
             protected void configure() {
-                bindAsContract(MySubscriber.class).in(Singleton.class);
+                bindAsContract(MySubscriber.class);
+            }
+        });
+        environment.lifecycle().manage(new Managed() {
+            @Override
+            public void start() throws Exception {
+                System.out.println("start");
+            }
+
+            @Override
+            public void stop() throws Exception {
+                System.out.println("end");
             }
         });
     }
-
 }

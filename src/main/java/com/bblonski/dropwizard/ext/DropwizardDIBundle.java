@@ -7,7 +7,6 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.hk2.api.InterceptionService;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.monitoring.ApplicationEvent;
 import org.glassfish.jersey.server.monitoring.ApplicationEventListener;
@@ -19,22 +18,27 @@ import javax.inject.Singleton;
 import java.util.Objects;
 
 public class DropwizardDIBundle<T extends Configuration> implements ConfiguredBundle<T> {
-    private final Class<? extends DropwizardBinder> binder;
+    private final Class<? extends DropwizardPostRun> initializer;
     private Bootstrap<?> bootstrap;
-    private DropwizardBinder<T> binderInstance;
+    private DropwizardPostRun<T> initailizerInstance;
+    private Class<? extends DropwizardInterceptionService> interceptionService;
 
-    public DropwizardDIBundle(Class<? extends DropwizardBinder<T>> binder) {
-        this.binder = binder;
+    public DropwizardDIBundle(Class<? extends DropwizardPostRun<T>> initializer) {
+        this.initializer = initializer;
     }
 
-    public DropwizardDIBundle(DropwizardBinder<T> binder) {
-        this.binderInstance = binder;
-        this.binder = binder.getClass();
+    public DropwizardDIBundle(DropwizardPostRun<T> initializer) {
+        this.initailizerInstance = initializer;
+        this.initializer = initializer.getClass();
     }
 
     @Override
     public void initialize(Bootstrap<?> bootstrap) {
         this.bootstrap = bootstrap;
+    }
+
+    public void setInterceptionService(Class<? extends DropwizardInterceptionService> interceptionService) {
+        this.interceptionService = interceptionService;
     }
 
     @Override
@@ -43,10 +47,13 @@ public class DropwizardDIBundle<T extends Configuration> implements ConfiguredBu
         environment.jersey().register(new AbstractBinder() {
             @Override
             protected void configure() {
-                bind(DropwizardInterceptionService.class).to(InterceptionService.class).in(Singleton.class);
-                bindAsContract(binder);
+                bindAsContract(initializer);
                 bind(EventBus.class).to(EventBus.class).in(Singleton.class);
+                if (interceptionService != null) {
+                    bind(interceptionService).to(InterceptionService.class).in(Singleton.class);
+                }
             }
+
         });
         environment.jersey().register(new ApplicationEventListener() {
             @Override
@@ -56,15 +63,13 @@ public class DropwizardDIBundle<T extends Configuration> implements ConfiguredBu
                             .requireNonNull(environment.getJerseyServletContainer()))
                             .getApplicationHandler()
                             .getServiceLocator();
-                    ServiceLocatorUtilities.enableImmediateScope(serviceLocator);
                     final EventBus eventBus = serviceLocator.getService(EventBus.class);
-                    final DropwizardInterceptionService interceptionService = (DropwizardInterceptionService) serviceLocator.getService(InterceptionService.class);
-                    if (binderInstance != null) {
-                        serviceLocator.inject(binderInstance);
+                    if (initailizerInstance != null) {
+                        serviceLocator.inject(initailizerInstance);
                     } else {
-                        binderInstance = serviceLocator.getService(binder);
+                        initailizerInstance = serviceLocator.getService(initializer);
                     }
-                    binderInstance.postRun(environment, configuration, eventBus, interceptionService);
+                    initailizerInstance.postRun(configuration, environment, eventBus);
                 }
             }
 
