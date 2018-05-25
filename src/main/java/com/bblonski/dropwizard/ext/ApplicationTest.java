@@ -1,10 +1,12 @@
 package com.bblonski.dropwizard.ext;
 
-import com.codahale.metrics.health.HealthCheck;
+import io.dropwizard.Application;
 import io.dropwizard.Configuration;
+import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.glassfish.hk2.api.InterceptionService;
-import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+
+import javax.inject.Singleton;
 
 class ApplicationTest extends Application<Configuration> {
     public static void main(String[] args) throws Exception {
@@ -12,17 +14,18 @@ class ApplicationTest extends Application<Configuration> {
     }
 
     @Override
-    public void run(Configuration configuration, Environment environment) throws Exception {
-        super.run(configuration, environment);
-        environment.jersey().register(MyService.class);
+    public void initialize(Bootstrap<Configuration> bootstrap) {
+        super.initialize(bootstrap);
+        bootstrap.addBundle(new HK2BridgeBundle<>(AppBinder.class));
     }
 
     @Override
-    void postRun(Configuration configuration, Environment environment, ServiceLocator serviceLocator, InterceptionService interceptionService) {
-        environment.healthChecks().register("Test", new HealthCheck() {
+    public void run(Configuration configuration, Environment environment) throws Exception {
+        environment.jersey().register(MyService.class);
+        environment.jersey().register(new AbstractBinder() {
             @Override
-            protected Result check() throws Exception {
-                return Result.healthy();
+            protected void configure() {
+                bindAsContract(MySubscriber.class).in(Singleton.class);
             }
         });
     }

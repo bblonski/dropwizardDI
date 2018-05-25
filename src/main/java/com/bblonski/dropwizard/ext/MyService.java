@@ -24,7 +24,7 @@ public class MyService {
     @GET
     @Timed
     public String test() {
-        topic.publish(new TestEvent());
+//        topic.publish(new TestEvent());
         eventBus.post(new TestEvent());
         return "Hello World";
     }

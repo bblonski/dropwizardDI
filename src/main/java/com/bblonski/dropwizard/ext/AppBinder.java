@@ -15,7 +15,7 @@ public class AppBinder extends ApplicationBinder<Configuration> {
 
     @Override
     void postRun(Environment environment, Configuration configuration, EventBus eventBus, DropwizardInterceptionService interceptionService) {
-        getEnvironment().healthChecks().register("test", new HealthCheck() {
+        environment.healthChecks().register("test", new HealthCheck() {
             @Override
             protected Result check() throws Exception {
                 return Result.healthy();
