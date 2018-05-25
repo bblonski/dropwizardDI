@@ -8,12 +8,12 @@ import org.glassfish.hk2.extras.interception.Intercepted;
 
 import javax.inject.Singleton;
 
-//@Intercepted
-//@Immediate
-//@MessageReceiver
-@Singleton
+@Intercepted
+@Immediate
+@MessageReceiver
+//@Singleton
 public class MySubscriber {
-    @Subscribe public void test(TestEvent event) {
-        System.out.println("Hello Subscriber");
+    @Subscribe public void test(@SubscribeTo TestEvent event) {
+        System.out.println("Subscriber");
     }
 }
