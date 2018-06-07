@@ -27,5 +27,6 @@ dependencies {
 //    compile("org.glassfish.jersey.containers.glassfish:jersey-gf-cdi:$jerseyVersion")
 //    compile("javax.transaction:javax.transaction-api:1.2")
     compile("org.glassfish.hk2:hk2-extras:2.5.0-b61")
+//    compile("de.lhorn:dropwizard-dashboard:1.1.1")
 //    compile("org.eclipse.jetty:jetty-cdi:$jettyVersion")
 }

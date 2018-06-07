@@ -28,19 +28,59 @@ import java.util.Objects;
 
 public class HK2BridgeBundle<T extends Configuration> implements ConfiguredBundle<T> {
     public static final String SERVICE_LOCATOR = HK2BridgeBundle.class.getName() + "_LOCATOR";
-    private final Class<ApplicationBinder<T>> binder;
+    private EventBus eventBus;
+    private InterceptionService interceptionService;
     private Bootstrap<?> bootstrap;
+    private ServiceLocator serviceLocator;
 
-    public HK2BridgeBundle(Class<ApplicationBinder<T>> binder) {
-        this.binder = binder;
+    private HK2BridgeBundle(EventBus eventBus, InterceptionService interceptionService,
+                            ServiceLocator serviceLocator) {
+        this.eventBus = eventBus;
+        this.interceptionService = interceptionService;
+        this.serviceLocator = serviceLocator;
+    }
+
+    public static <T extends Configuration> HK2BridgeBundleBuilder<T> create() {
+        return new HK2BridgeBundleBuilder<>();
+    }
+
+    public static class HK2BridgeBundleBuilder<T extends Configuration> {
+        private EventBus eventBus;
+        private InterceptionService interceptionService;
+        private ServiceLocator serviceLocator;
+
+        public HK2BridgeBundleBuilder<T> setEventBus(EventBus eventBus) {
+            this.eventBus = eventBus;
+            return this;
+        }
+
+        public HK2BridgeBundleBuilder<T> withDefaultInterceptionService() {
+            this.interceptionService = new DropwizardInterceptionService();
+            return this;
+        }
+
+        public HK2BridgeBundleBuilder<T> withCustomInterceptionService(InterceptionService interceptionService) {
+            this.interceptionService = interceptionService;
+            return this;
+        }
+
+        public HK2BridgeBundle<T> build() {
+            if (this.serviceLocator == null) {
+                this.serviceLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator(SERVICE_LOCATOR);
+            }
+            return new HK2BridgeBundle<>(eventBus, interceptionService, serviceLocator);
+        }
+
+        public HK2BridgeBundleBuilder<T> withCustomServiceLocator(ServiceLocator serviceLocator) {
+            ServiceLocatorFactory.getInstance().create(SERVICE_LOCATOR);
+            return this;
+        }
     }
 
     @Override
     public void initialize(Bootstrap<?> bootstrap) {
         this.bootstrap = bootstrap;
-        ExtrasUtilities.enableTopicDistribution(getLocator());
         ServiceLocatorUtilities.enableImmediateScope(getLocator());
-        ServiceLocatorUtilities.addClasses(getLocator(), MyService.class, MyInterceptor.class, MySubscriber.class);
     }
 
     @Override
@@ -65,14 +105,16 @@ public class HK2BridgeBundle<T extends Configuration> implements ConfiguredBundl
         environment.jersey().register(HK2BridgeFeature.class);
 
         environment.jersey().register(new DefaultDropwizardBinder<>(environment, bootstrap, configuration));
-        environment.jersey().register(new AbstractBinder() {
+        ServiceLocatorUtilities.bind(getLocator(), new AbstractBinder() {
             @Override
             protected void configure() {
-                bindAsContract(binder);
-                bind(DropwizardInterceptionService.class).to(DropwizardInterceptionService.class).to(InterceptionService.class).in(Singleton.class);
+                install(new DefaultDropwizardBinder<>(environment, bootstrap, configuration));
+                bind(DropwizardInterceptionService.class).to(DropwizardInterceptionService.class)
+                        .to(InterceptionService.class).in(Singleton.class);
                 bind(EventBus.class).to(EventBus.class).in(Singleton.class);
             }
         });
+
         environment.jersey().register(new ApplicationEventListener() {
             @Override
             public void onEvent(ApplicationEvent event) {
@@ -82,9 +124,6 @@ public class HK2BridgeBundle<T extends Configuration> implements ConfiguredBundl
                             .getApplicationHandler()
                             .getServiceLocator();
                     ServiceLocatorUtilities.enableImmediateScope(serviceLocator);
-                    final DropwizardInterceptionService interceptionService = serviceLocator.getService(DropwizardInterceptionService.class);
-                    final EventBus eventBus = serviceLocator.getService(EventBus.class);
-                    serviceLocator.getService(binder).postRun(environment, configuration, eventBus, interceptionService);
                 }
             }
 
@@ -95,8 +134,6 @@ public class HK2BridgeBundle<T extends Configuration> implements ConfiguredBundl
         });
 
     }
-
-    private ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create(SERVICE_LOCATOR);
 
     public ServiceLocator getLocator() {
         return serviceLocator;
@@ -116,6 +153,14 @@ public class HK2BridgeBundle<T extends Configuration> implements ConfiguredBundl
             ServiceLocator bundleLocator = serviceLocator.getService(ServiceLocator.class, SERVICE_LOCATOR);
             ExtrasUtilities.bridgeServiceLocator(serviceLocator, bundleLocator);
             ExtrasUtilities.bridgeServiceLocator(bundleLocator, serviceLocator);
+            ExtrasUtilities.enableTopicDistribution(serviceLocator);
+            ExtrasUtilities.enableTopicDistribution(bundleLocator);
+            ServiceLocatorUtilities.bind(new AbstractBinder() {
+                @Override
+                protected void configure() {
+                    bind(DropwizardInterceptionService.class).to(InterceptionService.class).in(Singleton.class);
+                }
+            });
             return true;
         }
     }

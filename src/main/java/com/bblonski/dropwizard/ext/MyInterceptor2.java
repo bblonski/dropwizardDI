@@ -7,11 +7,11 @@ import org.glassfish.hk2.extras.interception.Interceptor;
 
 @Interceptor
 @Intercepted
-public class MyInterceptor implements MethodInterceptor {
+public class MyInterceptor2 implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        System.out.println("Intercepted 5");
+        System.out.println("Intercepted 15");
         return invocation.proceed();
     }
 }
