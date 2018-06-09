@@ -6,13 +6,16 @@ import org.glassfish.hk2.api.messaging.MessageReceiver;
 import org.glassfish.hk2.api.messaging.SubscribeTo;
 import org.glassfish.hk2.extras.interception.Intercepted;
 
-import javax.inject.Singleton;
-
 @Intercepted
-@Immediate
 @MessageReceiver
-//@Singleton
+@Immediate
 public class MySubscriber {
+
+    public MySubscriber() {
+        System.out.println("Hi");
+    }
+
+    @MessageReceiver
     @Subscribe public void test(@SubscribeTo TestEvent event) {
         System.out.println("Subscriber");
     }

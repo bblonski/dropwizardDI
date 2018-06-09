@@ -9,6 +9,7 @@ import org.glassfish.hk2.api.InterceptionService;
 import org.glassfish.hk2.api.Rank;
 import org.glassfish.hk2.extras.interception.Intercepted;
 
+import javax.inject.Singleton;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+@Singleton
 public class DropwizardInterceptionService implements InterceptionService {
     private Cache<Method, List<MethodInterceptor>> methodCache = CacheBuilder.newBuilder()
             .build();

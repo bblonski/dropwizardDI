@@ -16,17 +16,14 @@ plugins {
 
 repositories {
     mavenCentral()
+//    maven("https://jitpack.io")
 }
 
 dependencies {
-    compile("io.dropwizard:dropwizard-core:$dropwizardVersion")
-//    compile("org.jboss.weld.se:weld-se-shaded:$weldVersion")
-//    compile("org.jboss.weld.servlet:weld-servlet-shaded:$weldVersion")
-//    compile("javax.servlet.jsp:jsp-api:2.2")
-//    compile("javax.enterprise:cdi-api:2.0")
-//    compile("org.glassfish.jersey.containers.glassfish:jersey-gf-cdi:$jerseyVersion")
-//    compile("javax.transaction:javax.transaction-api:1.2")
+    implementation("io.dropwizard:dropwizard-bom:1.3.3")
+    compile("io.dropwizard:dropwizard-core")
+    compile("org.glassfish.hk2:hk2-api:2.5.0-b61")
+    compile("org.glassfish.hk2:hk2-locator:2.5.0-b61")
     compile("org.glassfish.hk2:hk2-extras:2.5.0-b61")
-//    compile("de.lhorn:dropwizard-dashboard:1.1.1")
-//    compile("org.eclipse.jetty:jetty-cdi:$jettyVersion")
+//    compile("com.github.alex-shpak:dropwizard-hk2bundle:0.6.0")
 }
