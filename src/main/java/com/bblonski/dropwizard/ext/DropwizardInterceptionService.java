@@ -81,14 +81,6 @@ public class DropwizardInterceptionService implements InterceptionService {
             this.predicate = predicate;
             this.interceptor = interceptor;
         }
-
-        public Predicate<Method> getPredicate() {
-            return predicate;
-        }
-
-        public MethodInterceptor getInterceptor() {
-            return interceptor;
-        }
     }
 
     private static class ConstructorBinding {
@@ -99,14 +91,6 @@ public class DropwizardInterceptionService implements InterceptionService {
         ConstructorBinding(Predicate<Constructor> predicate, ConstructorInterceptor interceptor) {
             this.predicate = predicate;
             this.interceptor = interceptor;
-        }
-
-        public Predicate<Constructor> getPredicate() {
-            return predicate;
-        }
-
-        public ConstructorInterceptor getInterceptor() {
-            return interceptor;
         }
     }
 

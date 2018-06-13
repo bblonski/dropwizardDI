@@ -8,6 +8,7 @@ import io.dropwizard.setup.Environment;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extras.ExtrasUtilities;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.jersey.servlet.ServletProperties;
 
 public class HK2Bundle<T extends Configuration> implements ConfiguredBundle<T> {
     ServiceLocator serviceLocator;
@@ -21,7 +22,12 @@ public class HK2Bundle<T extends Configuration> implements ConfiguredBundle<T> {
 
     @Override
     public void run(T configuration, Environment environment) throws Exception {
+        // Bind Service locator
+        environment.getApplicationContext().setAttribute(ServletProperties.SERVICE_LOCATOR, serviceLocator);
+        environment.getAdminContext().setAttribute(ServletProperties.SERVICE_LOCATOR, serviceLocator);
+        // Bind default services
         environment.jersey().register(new DefaultDropwizardBinder<>(configuration, environment, bootstrap));
+        // Enable immediate scope
         environment.lifecycle().manage(new Managed() {
             @Override
             public void start() throws Exception {

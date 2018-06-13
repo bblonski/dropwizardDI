@@ -7,7 +7,6 @@ import io.dropwizard.setup.Environment;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.servlet.ServletProperties;
 
 import javax.inject.Inject;
 
@@ -21,8 +20,10 @@ public class Application extends io.dropwizard.Application<io.dropwizard.Configu
 
     @Inject
     MyHealthCheck myHealthCheck;
-//    @Inject
+    //    @Inject
 //    DropwizardInterceptionService interceptionService;
+    @Inject
+    MyResource myResource;
 
     @Override
     public void initialize(Bootstrap<Configuration> bootstrap) {
@@ -46,10 +47,8 @@ public class Application extends io.dropwizard.Application<io.dropwizard.Configu
             }
         });
         serviceLocator.inject(this);
-        environment.getApplicationContext().setAttribute(ServletProperties.SERVICE_LOCATOR, serviceLocator);
-        environment.getAdminContext().setAttribute(ServletProperties.SERVICE_LOCATOR, serviceLocator);
 //        environment.jersey().packages("com.bblonski.dropwizard.ext");
-        environment.jersey().register(MyResource.class);
+        environment.jersey().register(myResource);
 //        environment.healthChecks().register("Hello", myHealthCheck);
 //        interceptionService.addMethodInterceptor(x -> x.isAnnotationPresent(Timed.class),
 //                interceptor1);
