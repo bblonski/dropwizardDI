@@ -14,6 +14,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -38,15 +39,17 @@ public class DropwizardInterceptionService implements InterceptionService {
         methodInterceptors.sort((x, y) -> {
             final Class<? extends MethodInterceptor> xClass = x.interceptor.getClass();
             final Class<? extends MethodInterceptor> yClass = y.interceptor.getClass();
-            int xRank = Integer.MAX_VALUE;
-            int yRank = Integer.MAX_VALUE;
-            if (xClass.isAnnotationPresent(Rank.class)) {
-                xRank = xClass.getAnnotation(Rank.class).value();
+            Optional<Integer> xRank = xClass.isAnnotationPresent(Rank.class) ? Optional.of(xClass.getAnnotation(Rank.class).value()) : Optional.empty();
+            Optional<Integer> yRank = yClass.isAnnotationPresent(Rank.class) ? Optional.of(yClass.getAnnotation(Rank.class).value()) : Optional.empty();
+            if (xRank.isPresent() && yRank.isPresent()) {
+                return yRank.get() - xRank.get();
+            } else if (xRank.isPresent()) {
+                return 1;
+            } else if (yRank.isPresent()) {
+                return -1;
+            } else {
+                return 0;
             }
-            if (yClass.isAnnotationPresent(Rank.class)) {
-                yRank = yClass.getAnnotation(Rank.class).value();
-            }
-            return xRank - yRank;
         });
         methodCache.invalidateAll();
     }

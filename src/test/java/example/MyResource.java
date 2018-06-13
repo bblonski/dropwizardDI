@@ -1,34 +1,33 @@
-package com.bblonski.dropwizard.ext;
+package example;
 
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.eventbus.EventBus;
+import org.glassfish.hk2.api.messaging.Topic;
 import org.glassfish.hk2.extras.interception.Intercepted;
 import org.glassfish.jersey.process.internal.RequestScoped;
+import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 @Path("/")
-@Intercepted
 @RequestScoped
+@TestIntercept
+@Intercepted
+@Service
 public class MyResource {
 
-    @Timed
-    public MyResource() {
-        System.out.println("Constrcuted");
-    }
-
     @Inject
-    EventBus eventBus;
+    Topic<TestEvent> eventBus;
 
     @Inject
     MyService service;
 
     @GET
     @Timed
+    @TestIntercept
     public String test() throws InterruptedException {
-        eventBus.post(new TestEvent());
+        eventBus.publish(new TestEvent());
         service.doThing();
         return "Hello World";
     }

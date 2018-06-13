@@ -1,4 +1,4 @@
-package com.bblonski.dropwizard.ext;
+package example;
 
 import com.codahale.metrics.health.HealthCheck;
 

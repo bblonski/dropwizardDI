@@ -1,12 +1,10 @@
-package com.bblonski.dropwizard.ext;
+package example;
 
 import com.codahale.metrics.annotation.Timed;
 import org.glassfish.hk2.api.messaging.Topic;
-import org.glassfish.hk2.extras.interception.Intercepted;
 
 import javax.inject.Inject;
 
-@Intercepted
 public class MyService {
 
     @Inject

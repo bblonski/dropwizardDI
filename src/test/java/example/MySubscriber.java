@@ -1,4 +1,4 @@
-package com.bblonski.dropwizard.ext;
+package example;
 
 import com.google.common.eventbus.Subscribe;
 import org.glassfish.hk2.api.Immediate;
@@ -10,10 +10,6 @@ import org.glassfish.hk2.extras.interception.Intercepted;
 @MessageReceiver
 @Immediate
 public class MySubscriber {
-
-    public MySubscriber() {
-        System.out.println("Hi");
-    }
 
     @MessageReceiver
     @Subscribe public void test(@SubscribeTo TestEvent event) {

@@ -3,6 +3,7 @@ package com.bblonski.dropwizard.ext;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dropwizard.Application;
 import io.dropwizard.Configuration;
 import io.dropwizard.lifecycle.setup.LifecycleEnvironment;
 import io.dropwizard.setup.Bootstrap;
@@ -17,7 +18,7 @@ public class DefaultDropwizardBinder<T extends Configuration> extends AbstractBi
     private final Bootstrap bootstrap;
     private final T configuration;
 
-    public DefaultDropwizardBinder(Environment environment, Bootstrap bootstrap, T configuration) {
+    public DefaultDropwizardBinder(T configuration, Environment environment, Bootstrap bootstrap) {
         this.environment = environment;
         this.bootstrap = bootstrap;
         this.configuration = configuration;

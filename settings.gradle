@@ -8,3 +8,5 @@
  */
 
 rootProject.name = 'dropwizard'
+
+enableFeaturePreview("IMPROVED_POM_SUPPORT")
