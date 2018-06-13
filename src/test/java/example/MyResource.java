@@ -3,16 +3,13 @@ package example;
 import com.codahale.metrics.annotation.Timed;
 import org.glassfish.hk2.api.messaging.Topic;
 import org.glassfish.hk2.extras.interception.Intercepted;
-import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 @Path("/")
-@TestIntercept
 @Intercepted
-@Service
 public class MyResource {
 
     @Inject
@@ -21,10 +18,13 @@ public class MyResource {
     @Inject
     MyService service;
 
+    public MyResource() {
+    }
+
     @GET
     @Timed
     @TestIntercept
-    public String test() throws InterruptedException {
+    public String resourceTest() throws InterruptedException {
         eventBus.publish(new TestEvent());
         service.doThing();
         return "Hello World";

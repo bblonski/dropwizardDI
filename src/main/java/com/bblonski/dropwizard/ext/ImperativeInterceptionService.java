@@ -19,8 +19,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * An HK2 Interception service which registers interceptors with imperative code instead of with declarative annotations.
+ * This can be easier to implement and trace in simple scenarios.
+ * <p>
+ * Interceptors will be invoked in the order they were added, unless the interceptor has the {@link Rank} annotation,
+ * which will order by the given rank value, with higher values being invoked before lower ones.
+ */
 @Singleton
-public class DropwizardInterceptionService implements InterceptionService {
+public class ImperativeInterceptionService implements InterceptionService {
     private Cache<Method, List<MethodInterceptor>> methodCache = CacheBuilder.newBuilder()
             .build();
     private Cache<Constructor, List<ConstructorInterceptor>> constructorCache = CacheBuilder.newBuilder()
@@ -34,6 +41,11 @@ public class DropwizardInterceptionService implements InterceptionService {
         return x -> x.getQualifiers().contains(Intercepted.class.getName());
     }
 
+    /**
+     * Add a new method
+     * @param function
+     * @param interceptor
+     */
     public void addMethodInterceptor(Predicate<Method> function, MethodInterceptor interceptor) {
         methodInterceptors.add(new MethodBinding(function, interceptor));
         methodInterceptors.sort((x, y) -> {
@@ -69,7 +81,7 @@ public class DropwizardInterceptionService implements InterceptionService {
             }
             return xRank - yRank;
         });
-        methodCache.invalidateAll();
+        constructorCache.invalidateAll();
     }
 
     private static class MethodBinding {

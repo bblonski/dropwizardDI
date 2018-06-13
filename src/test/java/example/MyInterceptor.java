@@ -2,6 +2,7 @@ package example;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.glassfish.hk2.api.Rank;
 import org.glassfish.hk2.extras.interception.Interceptor;
 import org.jvnet.hk2.annotations.ContractsProvided;
 import org.jvnet.hk2.annotations.Service;
@@ -10,6 +11,7 @@ import org.jvnet.hk2.annotations.Service;
 @Service
 @ContractsProvided({MyInterceptor.class, MethodInterceptor.class})
 @TestIntercept
+@Rank(5)
 public class MyInterceptor implements MethodInterceptor {
 
     @Override
