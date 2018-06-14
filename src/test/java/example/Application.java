@@ -1,13 +1,12 @@
 package example;
 
-import com.bblonski.dropwizard.ext.AutoRegisterFeature;
 import com.bblonski.dropwizard.ext.HK2Bundle;
 import io.dropwizard.Configuration;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
-public class Application extends io.dropwizard.Application<io.dropwizard.Configuration> {
+public class Application extends io.dropwizard.Application<Configuration> {
 
     public static void main(String[] args) throws Exception {
         new Application().run(args);
@@ -31,8 +30,9 @@ public class Application extends io.dropwizard.Application<io.dropwizard.Configu
                 addActiveDescriptor(MyInterceptor2.class);
                 addActiveDescriptor(MySubscriber.class);
                 addActiveDescriptor(MyResource.class);
-                addActiveDescriptor(AutoRegisterFeature.class);
+                addActiveDescriptor(MyTask.class);
             }
         });
+        environment.jersey().register(MyResource.class);
     }
 }

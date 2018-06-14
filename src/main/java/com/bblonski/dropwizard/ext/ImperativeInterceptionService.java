@@ -8,6 +8,7 @@ import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.InterceptionService;
 import org.glassfish.hk2.api.Rank;
 import org.glassfish.hk2.extras.interception.Intercepted;
+import org.jvnet.hk2.annotations.ContractsProvided;
 
 import javax.inject.Singleton;
 import java.lang.reflect.Constructor;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
  * which will order by the given rank value, with higher values being invoked before lower ones.
  */
 @Singleton
+@ContractsProvided({ImperativeInterceptionService.class, InterceptionService.class})
 public class ImperativeInterceptionService implements InterceptionService {
     private Cache<Method, List<MethodInterceptor>> methodCache = CacheBuilder.newBuilder()
             .build();

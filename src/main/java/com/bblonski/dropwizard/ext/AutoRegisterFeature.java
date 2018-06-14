@@ -19,13 +19,13 @@ import javax.ws.rs.core.FeatureContext;
 public class AutoRegisterFeature implements Feature {
 
     @Inject
-    private IterableProvider<HealthCheck> healthCheckProvider;
-
-    @Inject
     private Environment environment;
 
     @Inject
     private ServiceLocator locator;
+
+    @Inject
+    private IterableProvider<HealthCheck> healthCheckProvider;
 
     @Inject
     private IterableProvider<Task> tasksProvider;
