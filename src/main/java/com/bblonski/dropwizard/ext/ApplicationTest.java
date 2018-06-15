@@ -41,7 +41,7 @@ class ApplicationTest extends Application<Configuration> {
 //
         final SeContainer se = SeContainerInitializer.newInstance()
                 .disableDiscovery()
-                .addExtensions(WeldDropwizardExtension.class, CdiComponentProvider.class)
+                .addExtensions(CDILogScanedBeansExtension.class, CdiComponentProvider.class)
                 .addPackages(ApplicationTest.class.getPackage())
                 .enableInterceptors(MyInterceptor.class)
                 .initialize();

@@ -10,8 +10,8 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import java.util.ArrayList;
 
-public class WeldDropwizardExtension implements Extension {
-    private static final Logger logger = LoggerFactory.getLogger(WeldDropwizardExtension.class);
+public class CDILogScanedBeansExtension implements Extension {
+    private static final Logger logger = LoggerFactory.getLogger(CDILogScanedBeansExtension.class);
     private final ArrayList<String> names = new ArrayList<String>();
 
     void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd) {
