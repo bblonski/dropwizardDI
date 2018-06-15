@@ -11,11 +11,11 @@ public class MySubscriber {
     }
 
     public void test(@Observes TestEvent event) {
-        System.out.println("Hello Subscriber");
+        System.out.println("Hello from " + Thread.currentThread().getName());
     }
 
     public void test2(@ObservesAsync TestEvent event) {
-        System.out.println("Hello Async");
+        System.out.println("Hello from " + Thread.currentThread().getName());
     }
 
 }

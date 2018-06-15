@@ -10,7 +10,7 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import java.util.ArrayList;
 
-class WeldDropwizardExtension implements Extension {
+public class WeldDropwizardExtension implements Extension {
     private static final Logger logger = LoggerFactory.getLogger(WeldDropwizardExtension.class);
     private final ArrayList<String> names = new ArrayList<String>();
 
