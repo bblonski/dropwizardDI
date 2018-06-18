@@ -25,10 +25,10 @@ public class MyResource {
 
     @GET
     @Timed
-    @TestIntercept
+    @Log
     public String resourceTest() {
         eventBus.publish(new TestEvent());
-        service.doThing();
+        service.doThing("noop");
         return "Hello World";
     }
 

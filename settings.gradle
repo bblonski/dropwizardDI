@@ -7,6 +7,4 @@
  * in the user guide at https://docs.gradle.org/4.7/userguide/multi_project_builds.html
  */
 
-rootProject.name = 'dropwizard'
-
-enableFeaturePreview("IMPROVED_POM_SUPPORT")
+rootProject.name = 'dropwizard-DI'
